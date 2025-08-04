@@ -18,7 +18,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-  
+          # Suppression de la ligne 'cache: maven' car ce n'est pas un projet Maven.
+          # La mise en cache de Gradle est gérée dans l'étape suivante.
 
       - name: Set up Gradle cache
         uses: actions/cache@v3
@@ -27,6 +28,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/build.gradle') }}
           restore-keys: |-
             ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+        
       - name: Build with Gradle
         run: ./gradlew build
 
@@ -60,5 +65,5 @@ jobs:
       - name: Clean up Docker container
         if: always()
         run: |
-          docker stop my-app || true 
+          docker stop my-app || true
           docker rm my-app || true
